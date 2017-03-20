@@ -1,4 +1,4 @@
-# AD_Utility
+# AD-Utility
 PowerShell programming example, performs various Active Directory utilities. 
 I learned the basics of PowerShell and wrote this script all in one day. 
 
