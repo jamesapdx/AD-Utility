@@ -1,6 +1,9 @@
 ﻿#####################################################################
 #
 #  AD Utilities, created by Jim Shaffer, 3/7/17
+#  All except 4 lines hand written. I learned the basics of
+#  PowerShell and wrote this script all in one day
+#
 #  This software will run various AD utilities
 #  Software is provided as a PowerShell example, not be
 #  used in a production environment
