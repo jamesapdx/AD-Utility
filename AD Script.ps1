@@ -2,13 +2,13 @@
 #
 #  AD Utilities, created by Jim Shaffer, 3/7/17
 #  This software will run various AD utilities
-#  Software is provided as a pwoershell example, not be
+#  Software is provided as a PowerShell example, not be
 #  used in a production environment
 #
 #####################################################################
 
 
-# Menu items are strored in the array $MenuItems, add as needed
+# Menu items are stored in the array $MenuItems, add as needed
 
 $MenuHeadText="Please select one of the followging items:"
 $MenuItems= "",
@@ -50,7 +50,7 @@ While( ($Selection = Read-Host -Prompt $MenuSelectionText) -ne $MenuItemsCount){
 Function MainMenuDraw{
 # draw the title and main menu items only
 
-$ScreenWidth=$host.ui.RawUI.WindowSize.width - 4  # get screen witdth, draw banner within width
+$ScreenWidth=$host.ui.RawUI.WindowSize.width - 4  # get screen width, draw banner within width
 $TitleMessage = "  JIM'S AD TOOLS SOFTWARE  "
 $TitleBanner = "#"*([int]($ScreenWidth/2) - [int]( $TitleMessage.Length / 2)) + $TitleMessage + "#"*([int]($ScreenWidth/2) - [int]( $TitleMessage.Length / 2))
 "$([int]($ScreenWidth/2) - [int]( $TitleMessage.Length / 2))"
@@ -61,7 +61,7 @@ $Lines
 Write-Host $TitleBanner "`n`n" -ForegroundColor Green
 $MenuHeadText + "`n"
 
-For ($x = 1; $x -le $MenuItemsCount ; $x++ )  # draw the menu items, improve by using fo each
+For ($x = 1; $x -le $MenuItemsCount ; $x++ )  # draw the menu items
     {
         "    " + $x  + " " + $MenuItems[$x] + "`n"
     }
@@ -76,7 +76,7 @@ For ($x = 1; $x -le $MenuItemsCount ; $x++ )  # draw the menu items, improve by 
 
 Function Networking{
 # this function will ask for new network information, IP, subnet mask, gateway
-# DNS server, will verify a good connection, then attampt to change the setting 
+# DNS server, will verify a good connection, then attempt to change the setting 
 # on the remote server
 # This function is currently NOT working and needs troubleshooting
 
@@ -113,7 +113,7 @@ $NewiP="$NewSub.$NewIP"
 $NewGateway="$NewSub.$NewGateway"
 $NewDNS="$NewSub.$NewDNS"
 
-# Display newley entered values
+# Display newly entered values
 "`n`n"
 "New IP Address: $NewiP"
 "New Subnet: $NewSubnet"
@@ -137,10 +137,10 @@ Invoke-Command -ComputerName $Computer -Credential $Cred -ScriptBlock{
     $wmi.SetDNSServerSearchOrder("$NewDNS")
   }  -ArgumentList $Computer, $NewIP, $NewSubne, $NewGateway, $NewDNS
 
-# need to add errror checking from previous lines, but for now assume success 
+# need to add error checking from previous lines, but for now assume success 
 ProgressBar SUCCESS 1 Up  
 $Lines
-$P = Read-Host -Prompt "Commands successefully proccessed. Press enter to continue." 
+$P = Read-Host -Prompt "Commands successfully proccessed. Press enter to continue." 
 
 "`nTesting new connection`n`n"
 
@@ -153,7 +153,7 @@ If (-not (Test-Connection $NewIP -Count 1  )  ) {
 
 ProgressBar SUCCESS 1 Up
 $Lines
-$P = Read-Host -Prompt "Connection successeful. Press enter to continue."
+$P = Read-Host -Prompt "Connection successful. Press enter to continue."
 
 }
 
@@ -186,7 +186,7 @@ $P = Read-Host -Prompt "Commands successeful. Press enter to continue."
 }
 
 Function Promote{
-# This function will pomete a remote server to a domain controller
+# This function will promote a remote server to a domain controller
 
 Clear
 $Lines
@@ -212,22 +212,37 @@ Invoke-Command -ComputerName $Computer -Credential $Cred -ScriptBlock{
 
 ProgressBar SUCCESS 1 Up
 $Lines
-$P = Read-Host -Prompt "Commands successeful. Press enter to continue."
+$P = Read-Host -Prompt "Commands successful. Press enter to continue."
 
 }
 
 Function MoveFSMO{
+# this function will move the 5 FSMO roles to another server
+# not completed at this time
 
 $Lines
 "Please enter the following parameters. You may enter [exit] to cancel at any time."
 "`n"
 
-
 }
+
+
+#####################################################################
+#
+#  Start of progress bar (move a boat) function
+#
+#####################################################################
 
 Function ProgressBar{
 Param ($Message, $Run, $Finish)
-# $Message is the message to be diplayed in the footer at completion, no more than 15 characters please
+# pass the success or fail message (1-15 characters), run distance (.1 to 1), and "Up" for a
+# non failed finish
+
+# this function is for fun and servers as a pretend progress bar
+# it will draw a boat moving across the screen and sink the boat to 
+# represent a failed state
+
+# $Message is the message to be displayed in the footer at completion, no more than 15 characters please
 # $Run is a number from .1 - 1 when the boat should sink, used for short distance failures
 
 # define art
@@ -266,7 +281,7 @@ $BoatSpeed = 60
 $SinkSpeed = 240
 $EndDelay = 350
 $BoatLength = 40
-$BoatRun = ($ScreenWidth - $BoatLength ) 
+$BoatRun = ($ScreenWidth - $BoatLength )  # total distance to run the boat
 $BoatLeading = @("`r")*$WaterLevel
 $Boat[$WaterLevel] = "^"*($ScreenWidth)
 $TitleMessage = ">  PROGRESS  <"
@@ -280,34 +295,33 @@ $FooterWater = "^"*$FooterBanner.Length
 
 # loop, sail the boat across the screen
 
-
-for ($x = 1 ; $x -lt [int]($BoatRun * $Run) ; $x++)
+for ($x = 1 ; $x -lt [int]($BoatRun * $Run) ; $x++) # outer loop, from 1 to total distance * desired distance factor (.1 to 1)
     { 
 
-    clear
+    clear  # clear the screen and draw the header/banner items
     $Lines
     $TitleBanner
     $Space = " "*$x
 
     $BoatLeading[$ProgressDisplayLevel] = "~~ $([int](100*($x/($BoatRun*10)))*10) ~~`r"
 
-        for ($y = 0 ; $y -lt $WaterLevel ; $y++)
+        for ($y = 0 ; $y -lt $WaterLevel ; $y++) # draw the boat array loop
             {
-            Write-Host $Space, $Boat[$y], $BoatLeading[$y]
+            Write-Host $Space, $Boat[$y], $BoatLeading[$y]  # draw trailing space, boat, any leading items
             }
 
-         write-host $FooterWater -ForegroundColor Cyan
-         Start-Sleep -Milliseconds $BoatSpeed
+         write-host $FooterWater -ForegroundColor Cyan  # draw the water
+         Start-Sleep -Milliseconds $BoatSpeed  # delay to get the right draw speed as it moves across the screen
     }
-Start-Sleep -Milliseconds $EndDelay
+Start-Sleep -Milliseconds $EndDelay  
 
+# the following will either raise the sails or sink the boat
 If ($Finish -eq "Up"){
     clear
     $Lines
     $TitleBanner
 
     $BoatLeading[$ProgressDisplayLevel] = "~~ $([int](100*($x/($BoatRun*10)))*10) ~~`r"
-
         for ($y = 0 ; $y -lt $WaterLevel ; $y++)
             {
             Write-Host $Space, $BoatFinish[$y], $BoatLeading[$y]
@@ -316,7 +330,6 @@ If ($Finish -eq "Up"){
          write-host $FooterWater -ForegroundColor Cyan
          Start-Sleep -Milliseconds $BoatSpeed
     }
-
 
 # sink the boat
 else {
@@ -341,6 +354,6 @@ $Lines
 
 }
 
-Main
+Main  #### Start of the program ####
 
-$Lines
+$Lines  #### End of the program ####
